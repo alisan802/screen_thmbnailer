@@ -1,0 +1,70 @@
+name: Build Windows executable
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-windows:
+    name: Windows x86_64 release
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    env:
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install stable Rust
+        shell: pwsh
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustc --version
+          cargo --version
+
+      - name: Cache Cargo files
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            target
+          key: windows-x86_64-cargo-release-${{ hashFiles('**/Cargo.lock', '.cargo/config.toml') }}
+          restore-keys: |
+            windows-x86_64-cargo-release-
+
+      - name: Build release executable with static C runtime
+        shell: pwsh
+        run: cargo build --locked --release
+
+      - name: Verify executable
+        shell: pwsh
+        run: |
+          $exe = "target/release/screen-thumbnailer.exe"
+          if (-not (Test-Path -LiteralPath $exe -PathType Leaf)) {
+            throw "Release executable was not created: $exe"
+          }
+          Get-Item -LiteralPath $exe | Select-Object FullName, Length
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: screen-thumbnailer-windows-x86_64
+          path: target/release/screen-thumbnailer.exe
+          if-no-files-found: error
+          retention-days: 14

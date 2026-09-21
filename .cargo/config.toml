@@ -1,0 +1,5 @@
+# Keep Windows release binaries portable by linking the MSVC C runtime into
+# the executable. This applies only to the 64-bit Windows MSVC target and does
+# not affect Linux builds.
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=+crt-static"]

@@ -1,0 +1,22 @@
+[package]
+name = "screen-thumbnailer"
+version = "0.1.0"
+edition = "2024"
+description = "動画からコンタクトシートを生成するデスクトップアプリ"
+license = "MIT"
+
+[dependencies]
+ab_glyph = "0.2"
+directories = "6"
+eframe = { version = "0.33", default-features = false, features = ["default_fonts", "glow", "wayland", "x11"] }
+image = { version = "0.25", default-features = false, features = ["jpeg", "png"] }
+imageproc = { version = "0.25", default-features = false }
+rfd = "0.15"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tempfile = "3"
+thiserror = "2"
+
+[profile.release]
+lto = "thin"
+strip = true

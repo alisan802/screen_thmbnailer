@@ -10,6 +10,8 @@
 
 FFmpegは動画の読み取りとフレーム抽出に使用します。アプリは入力動画を書き換えません。
 
+GitHub Actionsで生成するWindows x86_64版はMSVC Cランタイムを静的リンクしているため、`VCRUNTIME140.dll`の事前インストールは不要です。FFmpegとffprobeは引き続き別途必要です。
+
 ## 実行
 
 ```sh

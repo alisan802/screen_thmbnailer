@@ -44,11 +44,11 @@ jobs:
             ~/.cargo/registry/cache
             ~/.cargo/git/db
             target
-          key: windows-x86_64-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+          key: windows-x86_64-cargo-release-${{ hashFiles('**/Cargo.lock', '.cargo/config.toml') }}
           restore-keys: |
             windows-x86_64-cargo-release-
 
-      - name: Build release executable
+      - name: Build release executable with static C runtime
         shell: pwsh
         run: cargo build --locked --release
 
